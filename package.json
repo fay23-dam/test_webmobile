@@ -1,0 +1,18 @@
+{
+  "name": "test_kesekian",
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "node src/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@xaviabot/fb-downloader": "^1.0.14",
+    "btch-downloader": "^2.8.1",
+    "express": "^4.21.1",
+    "nayan-media-downloader": "^2.6.4"
+  }
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Downloader</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styling to limit media width and adjust video height */
+        .media-container {
+            width: 100%;
+            max-height: 50vh; /* Ensures video doesn't exceed 80% of viewport height */
+            margin-top: 1rem;
+            object-fit: contain; /* Maintains aspect ratio of video */
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center mt-6 p-4 sm:p-8 font-sans bg-gray-100 min-h-screen">
+    <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-center">Social Media Downloader</h1>
+    <div class="flex flex-col sm:flex-row items-center justify-center w-full max-w-md space-y-4 sm:space-y-0 sm:space-x-4">
+        <input type="text" id="url" placeholder="Enter Instagram, TikTok, Facebook, or Twitter URL" 
+               class="w-full sm:w-72 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button onclick="downloadMedia()" 
+                class="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+            Download
+        </button>
+    </div>
+    <div id="result" class="mt-6 text-center w-full max-w-md bg-white p-4 rounded-lg shadow-lg"></div>
+
+    <script>
+         async function downloadMedia() {
+            const url = document.getElementById('url').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Loading...';
+
+            try {
+                const response = await fetch(`/download?url=${encodeURIComponent(url)}`, { method: 'POST' });
+                const responseData = await response.json();
+                let i = 1;
+                if (response.ok) {
+                    resultDiv.innerHTML = `<h3 class="text-xl font-semibold mb-4">Downloaded from ${responseData.platform}</h3>`;
+                    responseData.data.forEach(mediaData => {
+                        if (mediaData.type === 'image') {
+                            resultDiv.innerHTML += `
+                                <a href="${mediaData.url}" target="_blank" class="block mt-4 rounded-lg shadow-lg">
+                                    gambar ${i++}
+                                </a>`;
+                        } else if (mediaData.type === 'video') {
+                            resultDiv.innerHTML += `
+                                <video controls class="media-container rounded-lg shadow-lg">
+                                    <source src="${mediaData.url}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>`;
+                        }
+                    });
+                } else {
+                    resultDiv.innerHTML = `<p class="text-red-500">Error: ${responseData.error}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-red-500">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
